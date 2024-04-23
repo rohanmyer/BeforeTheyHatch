@@ -2,10 +2,10 @@ from argparse import ArgumentParser
 import tensorflow as tf
 from huggingface_hub import push_to_hub_keras, from_pretrained_keras
 
-class CountryClassifier(tf.keras.Model):
+class EmbryoClassifier(tf.keras.Model):
 
     def __init__(self, num_classes, input_shape=(256,256,3)):
-        super(CountryClassifier, self).__init__()
+        super(EmbryoClassifier, self).__init__()
 
         pretrained_model = tf.keras.applications.ResNet50(
             include_top=False,
@@ -29,7 +29,6 @@ class CountryClassifier(tf.keras.Model):
 def parseArguments():
     parser = ArgumentParser(add_help=True)
     parser.add_argument("--load_weights", action="store_true") # load weights
-    parser.add_argument("--lat_long", action="store_true") # lat long model
     parser.add_argument("--batch_size", type=int, default=256) # batch size
     parser.add_argument("--num_epochs", type=int, default=2) # epochs
     parser.add_argument("--input_dim", type=int, default=256) # input image dimension
@@ -41,13 +40,14 @@ def parseArguments():
 
 def main(args):
     
-    train, test = country_load(args.data_dir + "/streetviews", args.batch_size, args.input_dim)
-    model = CountryClassifier(num_classes=args.num_classes)
+    train, test = data_load(args.data_dir + "/streetviews", args.batch_size, args.input_dim)
+    model = EmbryoClassifier(num_classes=args.num_classes)
     loss_fn = tf.keras.losses.SparseCategoricalCrossentropy()
 
     # load weights
-    path = 'rohanmyer/latlongpredictor' if args.lat_long else 'rohanmyer/countryclassifier'
+    path = '' 
     if args.load_weights:
+        raise NotImplementedError("Loading weights is not yet supported")
         from_pretrained_keras(path)
 
     model.compile(
