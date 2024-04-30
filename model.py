@@ -7,7 +7,7 @@ from preprocessing import data_load
 
 class EmbryoClassifier(tf.keras.Model):
 
-    def __init__(self, num_classes, input_shape=(256, 256, 1)):
+    def __init__(self, num_classes, input_shape=(256, 256, 3)):
         super(EmbryoClassifier, self).__init__()
 
         pretrained_model = tf.keras.applications.ResNet50(
@@ -77,6 +77,7 @@ def main(args):
     # save model
     # if not args.load_weights:
     #     push_to_hub_keras(model, path)
+    print("Saving model")
     model.save("model")
 
 

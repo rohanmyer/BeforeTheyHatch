@@ -1,19 +1,13 @@
 import os
-import pickle
-import random
-import numpy as np
 import tensorflow as tf
-from PIL import Image
-from tqdm import tqdm
 from tensorflow.keras.applications.resnet50 import preprocess_input
-import glob
 
 
 def data_load(dataset_dir, batch_size, img_size):
     train_dir = os.path.join(dataset_dir, "train")
     train = tf.keras.utils.image_dataset_from_directory(
         train_dir,
-        color_mode="grayscale",
+        color_mode="rgb",
         batch_size=batch_size,
         image_size=(img_size, img_size),
         shuffle=True,
@@ -23,7 +17,7 @@ def data_load(dataset_dir, batch_size, img_size):
     val_dir = os.path.join(dataset_dir, "val")
     val = tf.keras.utils.image_dataset_from_directory(
         val_dir,
-        color_mode="grayscale",
+        color_mode="rgb",
         batch_size=batch_size,
         image_size=(img_size, img_size),
         shuffle=True,
@@ -33,7 +27,7 @@ def data_load(dataset_dir, batch_size, img_size):
     test_dir = os.path.join(dataset_dir, "test")
     test = tf.keras.utils.image_dataset_from_directory(
         test_dir,
-        color_mode="grayscale",
+        color_mode="rgb",
         batch_size=batch_size,
         image_size=(img_size, img_size),
         shuffle=True,
