@@ -21,13 +21,16 @@ def generate_heatmap(model, image):
         last_conv_layer_output = last_conv_layer_model(image)
         tape.watch(last_conv_layer_output)
         preds = classifier_model(last_conv_layer_output)
-        top_pred_index = tf.argmax(preds[0])
-        top_class_channel = preds[:, top_pred_index]
+        preds_reshaped = tf.reshape(preds, [-1])  # Flatten all predictions
+        # print("Reshaped predictions:", preds_reshaped.shape)
+        top_pred_index = tf.argmax(preds_reshaped)
+        top_class_channel = preds_reshaped[top_pred_index]
+        # print("Top prediction index:", top_pred_index)
 
     grads = tape.gradient(top_class_channel, last_conv_layer_output)
     pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
 
-    # multiply gradients by its feature map
+    # Multiply gradients by its feature map
     last_conv_layer_output = last_conv_layer_output.numpy()[0]
     pooled_grads = pooled_grads.numpy()
     for i in range(pooled_grads.shape[-1]):
@@ -39,3 +42,29 @@ def generate_heatmap(model, image):
     gradcam = np.clip(gradcam, 0, np.max(gradcam)) / np.max(gradcam)
 
     return gradcam
+
+
+if __name__ == "__main__":
+    from model import EmbryoClassifier
+
+    model = EmbryoClassifier(num_classes=16)
+    # model.load_weights("model")
+
+    from tensorflow.keras.applications.resnet50 import preprocess_input
+
+    image = np.random.rand(256, 256, 3)
+    from PIL import Image
+
+    picture = Image.fromarray((image * 255).astype(np.uint8))
+    image = np.expand_dims(image, axis=0)
+    image = preprocess_input(image)
+
+    gradcam = generate_heatmap(model, image)
+
+    scale = 256 / gradcam.shape[0]
+
+    import matplotlib.pyplot as plt
+    from scipy.ndimage import zoom
+
+    plt.imshow(picture.resize((256, 256)))
+    plt.imshow(zoom(gradcam, zoom=(scale, scale)), alpha=0.5)

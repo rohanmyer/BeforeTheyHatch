@@ -29,12 +29,15 @@ class EmbryoClassifier(tf.keras.Model):
     def call(self, inputs):
         return self.model(inputs)
 
+    def load_weights(self, path):
+        self.model.load_weights(path)
+
 
 def parseArguments():
     parser = ArgumentParser(add_help=True)
     parser.add_argument("--load_weights", action="store_true")  # load weights
     parser.add_argument("--batch_size", type=int, default=256)  # batch size
-    parser.add_argument("--num_epochs", type=int, default=2)  # epochs
+    parser.add_argument("--num_epochs", type=int, default=5)  # epochs
     parser.add_argument("--input_dim", type=int, default=256)  # input image dimension
     parser.add_argument("--learning_rate", type=float, default=1e-3)  # learning rate
     parser.add_argument("--num_classes", type=int, default=16)  # number of classes
