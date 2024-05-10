@@ -19,9 +19,9 @@ class EmbryoClassifier(tf.keras.Model):
         for layer in pretrained_model.layers:
             layer.trainable = False
 
-        dropout1 = tf.keras.layers.Dropout(0.3)(pretrained_model.layers[-1].output)
-        dense1 = tf.keras.layers.Dense(500, activation="relu")(dropout1)
-        dropout2 = tf.keras.layers.Dropout(0.4)(dense1)
+        dropout1 = tf.keras.layers.Dropout(0.5)(pretrained_model.layers[-1].output)
+        dense1 = tf.keras.layers.Dense(512, activation="relu")(dropout1)
+        dropout2 = tf.keras.layers.Dropout(0.5)(dense1)
         dense2 = tf.keras.layers.Dense(num_classes, activation="softmax")(dropout2)
         self.model = tf.keras.Model(inputs=pretrained_model.inputs, outputs=dense2)
 
