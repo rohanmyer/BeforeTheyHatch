@@ -46,14 +46,15 @@ def generate_heatmap(model, image):
 
 if __name__ == "__main__":
     from model import EmbryoClassifier
+    from PIL import Image
+    from tensorflow.keras.applications.resnet50 import preprocess_input
+    import matplotlib.pyplot as plt
+    from scipy.ndimage import zoom
 
     model = EmbryoClassifier(num_classes=16)
-    # model.load_weights("model")
-
-    from tensorflow.keras.applications.resnet50 import preprocess_input
+    model.load()
 
     image = np.random.rand(256, 256, 3)
-    from PIL import Image
 
     picture = Image.fromarray((image * 255).astype(np.uint8))
     image = np.expand_dims(image, axis=0)
@@ -62,9 +63,6 @@ if __name__ == "__main__":
     gradcam = generate_heatmap(model, image)
 
     scale = 256 / gradcam.shape[0]
-
-    import matplotlib.pyplot as plt
-    from scipy.ndimage import zoom
 
     plt.imshow(picture.resize((256, 256)))
     plt.imshow(zoom(gradcam, zoom=(scale, scale)), alpha=0.5)
