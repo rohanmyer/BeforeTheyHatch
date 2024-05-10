@@ -2,10 +2,15 @@ import glob
 import os
 import random
 import pandas as pd
+from PIL import Image
+from tqdm import tqdm
+from PIL import ImageFile
 
-random.seed(42)
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-DATA = "sample_data"
+random.seed(21)
+
+DATA = "data"
 folder = f"{DATA}/embryo_dataset"
 
 subfolders = [f.name for f in os.scandir(folder) if f.is_dir()]
@@ -25,7 +30,14 @@ with open(f"{DATA}/test.txt", "w") as f:
     for item in test:
         f.write("%s\n" % item)
 
-from tqdm import tqdm
+
+def fix_image(path):
+    with open(path, "rb") as f:
+        check_chars = f.read()[-2:]
+    if check_chars != b"\xff\xd9":
+        im = Image.open(path)
+        im = im.convert("RGB")
+        im.save(path, "JPEG")
 
 
 def build_folder(split, folders):
@@ -48,9 +60,12 @@ def build_folder(split, folders):
                 os.makedirs(f"{DATA}/{split}/{label}")
             for idx in range(start_idx, end_idx + 1):
                 img_path = f"{DATA}/embryo_dataset/{embryo}/{naming}_RUN{idx}.jpeg"
-                os.system(f"cp {img_path} {DATA}/{split}/{label}")
+                if os.path.exists(img_path):
+                    fix_image(img_path)
+                    os.system(f"cp {img_path} {DATA}/{split}/{label}")
 
 
-build_folder("train", train)
-build_folder("val", val)
-build_folder("test", test)
+if __name__ == "__main__":
+    build_folder("test", test)
+    build_folder("val", val)
+    build_folder("train", train)
