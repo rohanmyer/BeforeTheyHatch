@@ -1,8 +1,7 @@
 from argparse import ArgumentParser
 import tensorflow as tf
+import tensorflow.keras as keras
 from preprocessing import data_load
-
-# from huggingface_hub import push_to_hub_keras, from_pretrained_keras
 
 
 class EmbryoClassifier(tf.keras.Model):
@@ -29,7 +28,10 @@ class EmbryoClassifier(tf.keras.Model):
     def call(self, inputs):
         return self.model(inputs)
 
-    def load_weights(self, path):
+    def save(self, path="model.weights.h5"):
+        self.model.save_weights(path)
+
+    def load(self, path="model.weights.h5"):
         self.model.load_weights(path)
 
 
@@ -81,7 +83,7 @@ def main(args):
     # if not args.load_weights:
     #     push_to_hub_keras(model, path)
     print("Saving model")
-    model.save("model")
+    model.save()
 
 
 if __name__ == "__main__":
